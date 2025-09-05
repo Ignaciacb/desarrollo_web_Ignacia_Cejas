@@ -7,5 +7,6 @@
    ## Decisiones tomadas
    - Agregué comentarios en el código para mayor claridad.
    - En el HTML, al inicio del formulario declare <form id="avisoForm" action="#" method="POST">, en donde "#" tiene un significado especial pues se refiere al mismo documento.
-   - De igual manera, al definir la imagen ampliada <img id="fotoGrande" src="#" alt="Vista ampliada de la foto">, ocupe "#" para evitar el error del validador de HTML W3
+   - De igual manera, al definir la imagen ampliada <img id="fotoGrande" src="#" alt="Vista ampliada de la foto">, ocupe "#" para evitar el error del validador de HTML W3.
+   - Defini un overlay para las fotos, para que al momento de solicitar agrandar la foto en el detalle de la publicacion esta se desplegara correctamente.
    ```
