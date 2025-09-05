@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Adopciones - Prototipo</title>
+  
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Encabezado de la pagina -->
+<header>
+  <h1>Sistema de Adopciones 🐾</h1>
+  <nav>
+    <a href="#" onclick="mostrar('portada')">Portada</a>
+    <a href="#" onclick="mostrar('formulario')">Agregar aviso</a>
+    <a href="#" onclick="mostrar('listado')">Ver listado</a>
+    <a href="#" onclick="mostrar('estadisticas')">Estadísticas</a>
+  </nav>
+</header>
+
+<!-- 1. PORTADA -->
+<section id="portada" class="visible">
+  <h2>Bienvenido/a al Sistema de Adopciones</h2>
+  <p>Aquí podrás ver y agregar avisos de adopción de perros y gatos.</p>
+  <h3>Últimos 5 avisos:</h3>
+
+  <table>
+		<tr><th>Fecha publicacion</th><th>Comuna</th><th>Sector</th><th>Cantidad/Tipo/Edad</th><th>Foto</tr>
+		<tr><th> 2025-08-30 12:35</th><th>Huechuraba</th><th>Pedro fontova</th><th>1 perro, 10 meses</th><th><img src="https://content.nationalgeographic.com.es/medio/2024/08/20/perros-y-playa-1_5811ad1f_240820230436_800x800.jpg" width="150" height="100" alt="perro jugando en la playa"></tr>
+		<tr><th> 2025-08-29 19:12</th><th>Providencia</th><th>Costanera center</th><th>1 perro, 2 meses</th><th><img src= "https://http2.mlstatic.com/D_NQ_NP_2X_974515-MLC70086430355_062023-T-cachorros-salchichas.webp" width="150" height="100" alt="cachorro en manos de una persona"></tr>
+	  <tr><th> 2025-08-28 17:10</th><th>Santiago</th><th>Parque O'higgins</th><th> 4 gatitos, 3 meses</th><th><img src= "https://purina.cl/sites/default/files/2025-04/razas-de-gatos.jpg" width="150" height="100" alt="4 gatos bebes"></tr>
+	  <tr><th> 2025-08-27 10:03</th><th>Huechuraba</th><th>Arboleda</th><th>1 gato, 8 meses</th><th><img src= "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8t5Qv9hoArKjwgA25zZgoNoKuhbVU2zc6-A&s" width="150" height="100" alt="gato mirando fijamente a la camara"></tr>
+	  <tr><th> 2025-08-26 14:51</th><th>Quilicura</th><th>Valle lo campino</th><th>1 perro, 3 meses</th><th><img src= "https://i.pinimg.com/236x/17/df/cf/17dfcf2a1bda1100434d41eae31085e3.jpg" width="150" height="100" alt="cachorro de golden retriever"></tr>
+</table>
+
+</section>
+
+<!-- 2. FORMULARIO -->
+<section id="formulario">
+  <h2>Agregar aviso de adopción</h2>
+
+  <div id="validationBox" hidden style="padding: 1em; border-left: 6px solid #4CAF50; margin-bottom: 1em; background: #ddffdd;">
+    <span id="validationMessageElem"></span>
+    <div id="validationListElem"></div>
+  </div>
+  <form id="avisoForm" action="#" method="POST">
+    
+<fieldset>
+  <legend>¿Dónde?</legend>
+  <label for="select-region">Región:</label>
+  <select id="select-region" name="region" required>
+    <option value="">Seleccione region</option>
+
+  </select><br>
+
+  <label for="select-comuna">Comuna:</label>
+  <select id="select-comuna" name="comuna" required>
+  <option value="">Seleccione comuna</option>
+  </select><br>
+
+  Sector:
+  <input type="text" name="sector" ><br>
+</fieldset>
+
+<fieldset>
+  <legend>¿Contacto de esta publicación?</legend>
+  Nombre: <input type="text" name="nombre" required><br>
+  
+  Email:<input type="text" name="email" required><br>
+  
+  Número de celular:<input type="text" name="numero" ><br>
+  
+  Contactar por: 
+<select name="contacto" id="contacto" onchange="mostrarInputContacto()">
+  <option value="">Seleccione forma de contacto</option>
+  <option value="Whatsapp">Whatsapp</option>
+  <option value="Telegram">Telegram</option>
+  <option value="X">X</option>
+  <option value="Instagram">Instagram</option>
+  <option value="Tiktok">Tiktok</option>
+  <option value="Otra">Otra</option>
+</select><br>
+
+<div id="Contacto" style="display:none">
+  <label for="datoContacto">Ingrese su ID de contacto o URL:</label>
+  <input type="text" name="datoContacto" id="datoContacto">
+</div>
+</fieldset>
+
+<fieldset>
+  <legend>¿Qué mascota ofrece en adopción?</legend>
+  Tipo:
+  <select name="tipo" required>
+    <option value="">Seleccione tipo</option>
+    <option value="Perro">Perro</option>
+    <option value="Gato">Gato</option>
+  </select><br>
+  
+  Cantidad: <input type="number" name="cantidad" min="0" required><br>
+  
+  Edad: <input type="number" name="edad" min="0" required><br>
+  
+  Unidad de medida edad: 
+    <select name="unidadmedida" required>
+    <option value="">Seleccione unidad</option>
+    <option value="meses">meses</option>
+    <option value="años">años</option>
+  </select><br>
+  
+  <label for="fechaEntrega">Fecha disponible para entrega:</label>
+  <input type="datetime-local" id="fechaEntrega" name="fechaEntrega" required><br>
+  
+  Descripcion: <br>
+  <textarea name="descripcion" cols="50" rows="10"></textarea><br>
+
+  Foto:
+  <input type="file" id="fotos" name="fotos" multiple required><br>
+  <small>Puedes subir entre 1 y 5 fotos.</small><br>
+
+      <button type="button" id="submit-btn" class="boton">Agregar este aviso de adopción</button>  <div id="confirmacion" style="display:none;">
+    <p>¿Está seguro que desea agregar este aviso de adopción?</p>
+    <button class="boton" onclick="finalizar()">Sí, estoy seguro</button>
+    <button class="boton-sec" onclick="cancelar()">No, quiero volver</button>
+  </div>
+  <div id="gracias" style="display:none;">
+    <p><strong>Hemos recibido la información de adopción, muchas gracias y suerte!</strong></p>
+    <button class="boton" onclick="mostrar('portada')">Volver a la portada</button>
+  </div>
+</fieldset>
+  </form>
+</section>
+
+<!-- 3. LISTADO -->
+<section id="listado">
+  <h2>Listado de avisos de adopción</h2>
+  <table>
+    <tr><th>Fecha publicación</th><th>Fecha entrega</th><th>Comuna</th><th>Sector</th><th>Cantidad/Tipo/Edad</th><th>Nombre contacto</th><th>Total fotos</tr>
+    <tr onclick="verDetalle(1)"><td>2025-08-26 14:51</td><td>2025-08-26 14:51</td><td>Santiago</td><td>Beauchef</td><td>3 gatitos, 2 meses</td><td> Alejandra Pena</td><td> 2 fotos disponibles</td>
+    <tr onclick="verDetalle(2)"><td>2025-08-26 14:51</td><td>2025-08-26 14:51</td><td>Valparaíso</td><td>Cerro alegre</td><td>1 gato, 8 años</td><td> Carlos Delgado</td><td> 1 foto disponible</td>
+    <tr onclick="verDetalle(3)"><td>2025-08-26 14:51</td><td>2025-08-26 14:51</td><td>Concepción</td><td>Talcahuano</td><td>1 perro, 5 meses</td><td> Hernan Ramos</td><td>1 foto disponible</td>
+    <tr onclick="verDetalle(4)"><td>2025-08-26 14:51</td><td>2025-08-26 14:51</td><td>Temuco</td><td>El Carmen</td><td>2 perros, 1 mes</td><td> Elisa Figueroa</td><td>1 foto disponible</td>
+    <tr onclick="verDetalle(5)"><td>2025-08-26 14:51</td><td>2025-08-26 14:51</td><td>La Serena</td><td>Avenida del mar</td><td>1 perro, 3 años</td><td> Gloria Flores</td><td>1 foto disponible</td>
+  </table>
+</section>
+
+<!-- DETALLE DE AVISO -->
+<section id="detalle">
+  <h2>Detalle del aviso</h2>
+  <div id="contenidoDetalle"></div>
+  <button class="boton" onclick="mostrar('listado')">Volver al listado</button>
+  <button class="boton-sec" onclick="mostrar('portada')">Volver a portada</button>
+</section>
+
+<!-- 4. ESTADÍSTICAS -->
+<section id="estadisticas">
+  <h2>Estadísticas</h2>
+  <div style="text-align: center;">
+    <img src="lineas.png" width="800" height="750" alt="Gráfico de líneas: cantidad de avisos por dia"> <br>
+    <img src="torta.png" width="800" height="750" alt="Gráfico de torta: total de avisos por tipo de mascota"> <br>
+    <img src="barras.png" width="800" height="750" alt="Gráfico de barras: número de avisos de perros y gatos en los ultimos meses"> <br>
+    </div>
+  <button class="boton" onclick="mostrar('portada')">Volver a la portada</button>
+</section>
+
+<!-- Overlay para fotos -->
+<div id="overlay" onclick="cerrarFoto()">
+  <img id="fotoGrande" src="#" alt="Vista ampliada de la foto"> 
+  <button class="boton-sec" onclick="cerrarFoto()">Cerrar</button>
+</div>
+
+<!-- JS externo -->
+<script src="app.js"></script>
+<script src="./js/select.js"></script>
+<script src="./js/validation.js"></script>
+</body>
+</html>
