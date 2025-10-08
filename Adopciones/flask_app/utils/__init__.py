@@ -1,0 +1,15 @@
+# Este archivo hace que Python trate el directorio 'utils' como un paquete
+from .validations import (validate_contact_name,
+                          validate_email,
+                          validate_phone,
+                          validate_sector,
+                          validate_animal_type,
+                          validate_quantity,
+                          validate_age,
+                          validate_age_unit,
+                          validate_delivery_date,
+                          validate_description,
+                          validate_commune_id,
+                          validate_contact_methods,
+                          validate_pet_images,
+                          validate_adoption_notice)

@@ -1,0 +1,62 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Detalle del Aviso - Sistema de Adopciones{% endblock %}
+
+{% block content %}
+        <section class="section visible">
+            {% if detalle %}
+            <h2>Detalle del aviso</h2>
+            
+            <div class="aviso-detail">
+                <div class="aviso-info">
+                    <h3>Información del contacto</h3>
+                    <p><strong>Nombre:</strong> {{ detalle.nombre_contacto }}</p>
+                    <p><strong>Email:</strong> {{ detalle.email_contacto }}</p>
+                    <p><strong>Teléfono:</strong> {{ detalle.telefono_contacto }}</p>
+                    <p><strong>Contactar por:</strong> {{ detalle.metodo_contacto or 'No especificado' }}</p>
+                    <p><strong>ID/URL de contacto:</strong> {{ detalle.valor_contacto or 'No especificado' }}</p>
+                </div>
+
+                <div class="aviso-info">
+                    <h3>Información de la mascota</h3>
+                    <p><strong>Tipo:</strong> {{ detalle.tipo_animal }}</p>
+                    <p><strong>Cantidad:</strong> {{ detalle.cantidad }}</p>
+                    <p><strong>Edad:</strong> {{ detalle.edad }} {{ detalle.unidad_edad }}</p>
+                    <p><strong>Descripción:</strong> {{ detalle.descripcion or 'No especificada' }}</p>
+                </div>
+
+                <div class="aviso-info">
+                    <h3>Información de entrega</h3>
+                    <p><strong>Región:</strong> {{ detalle.region }}</p>
+                    <p><strong>Comuna:</strong> {{ detalle.comuna }}</p>
+                    <p><strong>Sector:</strong> {{ detalle.sector or 'No especificado' }}</p>
+                    <p><strong>Fecha de entrega:</strong> {{ detalle.fecha_entrega }}</p>
+                </div>
+
+                {% if fotos %}
+                <div class="aviso-fotos">
+                    <h3>Fotos de la mascota</h3>
+                    <div class="fotos-grid">
+                        {% for foto in fotos %}
+                        <img src="{{ foto }}" 
+                             alt="Foto de la mascota" 
+                             class="foto-mascota"
+                             onclick="ampliarFoto(this.src)">
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="aviso-actions">
+                <a href="{{ url_for('listado_adopciones') }}" class="btn btn--secondary">Volver al listado</a>
+                <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
+            </div>
+            {% else %}
+            <h2>Detalle del aviso</h2>
+            <p>Aviso no encontrado.</p>
+            <a href="{{ url_for('listado_adopciones') }}" class="btn btn--secondary">Volver al listado</a>
+            <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
+            {% endif %}
+        </section>
+{% endblock %}

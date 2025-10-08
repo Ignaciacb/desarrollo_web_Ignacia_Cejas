@@ -1,0 +1,63 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Listado de Avisos - Sistema de Adopciones{% endblock %}
+
+{% block content %}
+        <section class="section visible">
+            <h2>Listado de avisos de adopción</h2>
+            
+            {% if data %}
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table__head">
+                        <tr>
+                            <th>Fecha publicación</th>
+                            <th>Fecha entrega</th>
+                            <th>Comuna</th>
+                            <th>Sector</th>
+                            <th>Cantidad/Tipo/Edad</th>
+                            <th>Nombre contacto</th>
+                            <th>Total fotos</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table__body">
+                        {% for aviso in data %}
+                        <tr class="table__row table__row--clickable" onclick="window.location.href='{{ url_for('detalle_aviso', aviso_id=aviso.aviso_id) }}'">
+                            <td>{{ aviso.fecha_publicacion }}</td>
+                            <td>{{ aviso.fecha_entrega }}</td>
+                            <td>{{ aviso.comuna }}</td>
+                            <td>{{ aviso.sector }}</td>
+                            <td>{{ aviso.cantidad_tipo_edad }}</td>
+                            <td><a href="{{ url_for('detalle_aviso', aviso_id=aviso.aviso_id) }}">{{ aviso.nombre_contacto }}</a></td>
+                            <td>{{ aviso.total_fotos }} foto{% if aviso.total_fotos != 1 %}s{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="pagination">
+                {% if has_prev %}
+                    <a href="{{ url_for('listado_adopciones', page=pagina_actual-1) }}" class="btn btn--secondary">← Anterior</a>
+                {% endif %}
+                
+                <span class="pagination__info">Página {{ pagina_actual }} de {{ total_paginas }}</span>
+                
+                {% if has_next %}
+                    <a href="{{ url_for('listado_adopciones', page=pagina_actual+1) }}" class="btn btn--secondary">Siguiente →</a>
+                {% endif %}
+            </div>
+            
+            {% else %}
+            <p class="no-data">No hay avisos de adopción disponibles.</p>
+    {% endif %}
+  </section>
+{% endblock %}
+
+{% block javascript %}
+<script>
+// Inicializar datos de comunas 
+window.comunasData = {{ comunas_por_region | tojson | safe }};
+</script>
+{% endblock %}

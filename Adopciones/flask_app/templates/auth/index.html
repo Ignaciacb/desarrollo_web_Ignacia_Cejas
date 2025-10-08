@@ -1,0 +1,65 @@
+{% extends "auth/base.html" %}
+
+{% block content %}
+
+<!-- 1. PORTADA -->
+<section id="portada" class="visible">
+  <h2>Bienvenido/a al Sistema de Adopciones</h2>
+  <p>Aquí podrás ver y agregar avisos de adopción de perros y gatos.</p>
+  <h3>Últimos 5 avisos:</h3>
+
+  {% if data %}
+  <table>
+    <tr><th>Fecha publicación</th><th>Comuna</th><th>Sector</th><th>Cantidad/Tipo/Edad</th><th>Foto</th></tr>
+    {% for aviso in data %}
+    <tr>
+      <td>{{ aviso.fecha_publicacion }}</td>
+      <td>{{ aviso.comuna }}</td>
+      <td>{{ aviso.sector }}</td>
+      <td>{{ aviso.cantidad_tipo_edad }}</td>
+      <td>
+        {% if aviso.path_image %}
+        <img src="{{ aviso.path_image }}" width="150" height="100" alt="Foto de mascota" onclick="ampliarFoto('{{ aviso.path_image }}')" style="cursor: pointer;">
+        {% else %}
+        <span>Sin foto</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <p>No hay avisos de adopción disponibles.</p>
+  {% endif %}
+</section>
+
+
+
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+// Inicializar datos de comunas desde el servidor
+window.comunasData = {{ comunas_por_region | tojson | safe }};
+
+
+// Función para ampliar fotos
+function ampliarFoto(src) {
+    document.getElementById('fotoGrande').src = src;
+    document.getElementById('overlay').style.display = 'flex';
+}
+
+function cerrarFoto() {
+    document.getElementById('overlay').style.display = 'none';
+}
+
+// Configurar eventos al cargar la página
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            cerrarFoto();
+        }
+    });
+});
+</script>
+{% endblock %}

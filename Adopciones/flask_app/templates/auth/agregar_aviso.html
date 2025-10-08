@@ -1,0 +1,227 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Agregar Aviso - Sistema de Adopciones{% endblock %}
+
+{% block content %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="flash-messages">
+        {% for category, message in messages %}
+          <div class="flash flash--{{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <section class="section visible">
+    <h2 class="section__title">Agregar aviso de adopción</h2>
+
+    <form id="avisoForm" class="form" action="{{ url_for('agregar_aviso') }}" method="POST" enctype="multipart/form-data">
+      
+      <fieldset class="form__fieldset">
+        <legend class="form__legend">¿Dónde?</legend>
+        
+        <div class="form__group">
+          <label for="region_id" class="form__label required">Región: <span style="color: red;">*</span></label>
+          <select id="region_id" name="region_id" class="form__select" required>
+            <option value="">Seleccione región</option>
+            {% for region in regiones %}
+            <option value="{{ region.id }}">{{ region.nombre }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        
+        <div class="form__group">
+          <label for="comuna_id" class="form__label required">Comuna: <span style="color: red;">*</span></label>
+          <select id="comuna_id" name="comuna_id" class="form__select" required>
+            <option value="">Seleccione comuna</option>
+          </select>
+        </div>
+        
+        <div class="form__group">
+          <label for="sector" class="form__label">Sector:</label>
+          <input type="text" id="sector" name="sector" class="form__input" maxlength="100">
+        </div>
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        <legend class="form__legend">¿Contacto de esta publicación?</legend>
+        
+        <div class="form__group">
+          <label for="nombre_contacto" class="form__label required">Nombre: <span style="color: red;">*</span></label>
+          <input type="text" id="nombre_contacto" name="nombre_contacto" class="form__input" required maxlength="200">
+        </div>
+        
+        <div class="form__group">
+          <label for="email_contacto" class="form__label required">Email: <span style="color: red;">*</span></label>
+          <input type="email" id="email_contacto" name="email_contacto" class="form__input" required maxlength="100">
+        </div>
+        
+        <div class="form__group">
+          <label for="telefono_contacto" class="form__label">Número de celular:</label>
+          <input type="tel" id="telefono_contacto" name="telefono_contacto" class="form__input" 
+                 pattern="\+569\d{8}" placeholder="+56912345678" maxlength="12">
+        </div>
+        
+        <div class="form__group">
+          <label for="metodo_contacto" class="form__label">Contactar por:</label>
+          <select name="metodo_contacto" id="metodo_contacto" class="form__select" onchange="mostrarInputContacto()">
+            <option value="">Seleccione forma de contacto</option>
+            <option value="whatsapp">Whatsapp</option>
+            <option value="telegram">Telegram</option>
+            <option value="X">X</option>
+            <option value="instagram">Instagram</option>
+            <option value="tiktok">Tiktok</option>
+            <option value="otra">Otra</option>
+          </select>
+        </div>
+
+        <div id="contacto_adicional" class="form__group" style="display:none">
+          <label for="valor_contacto" class="form__label">Ingrese su ID de contacto o URL:</label>
+          <input type="text" name="valor_contacto" id="valor_contacto" class="form__input" minlength="4" maxlength="50" placeholder="Mínimo 4 caracteres, máximo 50">
+        </div>
+      </fieldset>
+
+      <fieldset class="form__fieldset">
+        <legend class="form__legend">¿Qué mascota ofrece en adopción?</legend>
+        
+        <div class="form__group">
+          <label for="tipo_animal" class="form__label required">Tipo: <span style="color: red;">*</span></label>
+          <select id="tipo_animal" name="tipo_animal" class="form__select" required>
+            <option value="">Seleccione tipo</option>
+            <option value="perro">Perro</option>
+            <option value="gato">Gato</option>
+          </select>
+        </div>
+        
+        <div class="form__group">
+          <label for="cantidad" class="form__label required">Cantidad: <span style="color: red;">*</span></label>
+          <input type="number" id="cantidad" name="cantidad" class="form__input" min="1" step="1" required>
+        </div>
+        
+        <div class="form__group">
+          <label for="edad" class="form__label required">Edad: <span style="color: red;">*</span></label>
+          <input type="number" id="edad" name="edad" class="form__input" min="1" step="1" required>
+        </div>
+        
+        <div class="form__group">
+          <label for="unidad_edad" class="form__label required">Unidad de medida edad: <span style="color: red;">*</span></label>
+          <select id="unidad_edad" name="unidad_edad" class="form__select" required>
+            <option value="">Seleccione unidad</option>
+            <option value="meses">meses</option>
+            <option value="años">años</option>
+          </select>
+        </div>
+        
+        <div class="form__group">
+          <label for="fecha_entrega" class="form__label required">Fecha disponible para entrega: <span style="color: red;">*</span></label>
+          <input type="datetime-local" id="fecha_entrega" name="fecha_entrega" class="form__input" required>
+        </div>
+        
+        <div class="form__group">
+          <label for="descripcion" class="form__label">Descripción:</label>
+          <textarea id="descripcion" name="descripcion" class="form__textarea" maxlength="1000"></textarea>
+        </div>
+
+        <div class="form__group" id="fotos_group">
+          <label for="fotos_mascota" class="form__label required">Fotos: <span style="color: red;">*</span></label>
+          <input type="file" id="fotos_mascota" name="fotos_mascota" class="form__file" multiple accept="image/*" required>
+        </div>
+
+        <div class="form__group">
+          <button type="submit" class="btn btn--primary">Agregar este aviso de adopción</button>
+        </div>
+      </fieldset>
+    </form>
+
+
+    {% if error %}
+    <div class="error-message">
+      {{ error }}
+    </div>
+    {% endif %}
+  </section>
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+// Inicializar datos de comunas desde el servidor
+window.comunasData = {{ comunas_por_region | tojson | safe }};
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Configurar fecha mínima específica para este formulario
+    const fechaEntrega = document.getElementById('fecha_entrega');
+    if (fechaEntrega) {
+        const now = new Date();
+        now.setHours(now.getHours() + 2); 
+        const minDate = now.toISOString().slice(0, 16);
+        fechaEntrega.min = minDate;
+    }
+    
+    // Manejar formato del teléfono
+    const telefonoInput = document.getElementById('telefono_contacto');
+    if (telefonoInput) {
+        telefonoInput.addEventListener('input', function() {
+            let value = this.value;
+            // Si está vacío, dejarlo vacío
+            if (value === '') {
+                return;
+            }
+            // Si no empieza con +569, agregarlo
+            if (!value.startsWith('+569')) {
+                this.value = '+569' + value.replace(/[^\d]/g, '');
+            } else {
+                // Solo permitir números después de +569
+                this.value = '+569' + value.substring(4).replace(/[^\d]/g, '');
+            }
+        });
+        
+        telefonoInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.value = '+569';
+            }
+        });
+    }
+
+    const valorContactoInput = document.getElementById('valor_contacto');
+    if (valorContactoInput) {
+        valorContactoInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value && (value.length < 4 || value.length > 50)) {
+                this.setCustomValidity('Debe tener entre 4 y 50 caracteres');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    
+    // Validación para que solo se ingresen enteros en cantidad 
+    const cantidadInput = document.getElementById('cantidad');
+    
+    if (cantidadInput) {
+        cantidadInput.addEventListener('input', function() {
+            if (this.value.includes('.')) {
+                this.value = Math.floor(this.value);
+            }
+        });
+        
+        cantidadInput.addEventListener('keydown', function(e) {
+            // No permitir punto decimal, coma o 'e'
+            if (e.key === '.' || e.key === ',') {
+                e.preventDefault();
+            }
+        });
+    }
+    
+    const form = document.getElementById('avisoForm');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            validateForm();
+        });
+    }
+    
+});
+</script>
+{% endblock %}

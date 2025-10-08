@@ -1,0 +1,24 @@
+{
+    "get_user_by_id": "SELECT id, username, email, password FROM usuarios WHERE id=%s;",
+    "get_user_by_email": "SELECT id, username, email, password FROM usuarios WHERE email=%s;",
+    "get_user_by_username": "SELECT id, username, email, password FROM usuarios WHERE username=%s;",
+    "create_user": "INSERT INTO usuarios (username, password, email) VALUES (%s, %s, %s);",
+    
+    "get_adoption_notices": "SELECT * FROM aviso_adopcion ORDER BY fecha_publicacion DESC LIMIT %s;",
+    "get_paginated_adoptions": "SELECT * FROM aviso_adopcion ORDER BY fecha_publicacion DESC LIMIT %s OFFSET %s;",
+    "get_adoption_notice_by_id": "SELECT * FROM aviso_adopcion WHERE id=%s;",
+    "create_adoption_notice": "INSERT INTO aviso_adopcion (nombre_contacto, email_contacto, telefono_contacto, sector, tipo_animal, cantidad, edad, unidad_edad, descripcion, fecha_entrega, comuna_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);",
+    
+    "add_pet_photo": "INSERT INTO foto (ruta_archivo, aviso_id) VALUES (%s, %s);",
+    "get_pet_photos": "SELECT * FROM foto WHERE aviso_id=%s;",
+    "get_main_pet_photo": "SELECT ruta_archivo FROM foto WHERE aviso_id=%s LIMIT 1;",
+    
+    "add_contact_method": "INSERT INTO contactan_por (metodo_contacto, valor_contacto, aviso_id) VALUES (%s, %s, %s);",
+    "get_contact_methods": "SELECT * FROM contactan_por WHERE aviso_id=%s;",
+    
+    "get_regiones": "SELECT * FROM region;",
+    "get_comunas_by_region": "SELECT * FROM comuna WHERE region_id=%s;",
+    "get_comuna_by_id": "SELECT * FROM comuna WHERE id=%s;",
+    
+    "get_total_adoption_notices": "SELECT COUNT(*) as total FROM aviso_adopcion;"
+}

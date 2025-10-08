@@ -1,0 +1,12 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Éxito - Sistema de Adopciones{% endblock %}
+
+{% block content %}
+<section class="section visible">
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
+    <a href="{{ url_for('listado_adopciones') }}" class="btn btn--secondary">Ver todos los avisos</a>
+  </div>
+</section>
+{% endblock %}

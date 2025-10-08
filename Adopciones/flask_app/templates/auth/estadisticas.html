@@ -1,0 +1,17 @@
+{% extends "auth/base.html" %}
+
+{% block title %}Estadísticas - Sistema de Adopciones{% endblock %}
+
+{% block content %}
+<section class="section visible">
+  <h2>Estadísticas</h2>
+  <div style="text-align: center;">
+    <img src="{{ url_for('static', filename='uploads/lineas.png') }}" width="800" height="750" alt="Gráfico de líneas: cantidad de avisos por dia"> <br>
+    <img src="{{ url_for('static', filename='uploads/torta.png') }}" width="800" height="750" alt="Gráfico de torta: total de avisos por tipo de mascota"> <br>
+    <img src="{{ url_for('static', filename='uploads/barras.png') }}" width="800" height="750" alt="Gráfico de barras: número de avisos de perros y gatos en los ultimos meses"> <br>
+  </div>
+  <div style="text-align: center; margin-top: 20px;">
+    <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
+  </div>
+</section>
+{% endblock %}

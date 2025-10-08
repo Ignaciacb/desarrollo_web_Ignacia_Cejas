@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>{% block title %}Sistema de Adopciones{% endblock %}</title>
+    {% block css %}{% endblock %}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+
+    <!-- Encabezado de la pagina -->
+    <header>
+      <h1>Sistema de Adopciones 🐾</h1>
+      <nav>
+        <a href="{{ url_for('index') }}">Portada</a>
+        <a href="{{ url_for('agregar_aviso') }}">Agregar aviso</a>
+        <a href="{{ url_for('listado_adopciones') }}">Ver listado</a>
+        <a href="{{ url_for('estadisticas') }}">Estadísticas</a>
+      </nav>
+    </header>
+
+    <!-- Mensajes Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- Contenido principal con secciones -->
+    <main>
+      {% block content %}{% endblock %}
+    </main>
+
+    <!-- Overlay para fotos -->
+    <div id="overlay" onclick="cerrarFoto()">
+      <img id="fotoGrande" src="#" alt="Vista ampliada de la foto"> 
+      <button class="boton-sec" onclick="cerrarFoto()">Cerrar</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/validation.js') }}"></script>
+
+    {% block javascript %}{% endblock %}
+  </body>
+</html>
