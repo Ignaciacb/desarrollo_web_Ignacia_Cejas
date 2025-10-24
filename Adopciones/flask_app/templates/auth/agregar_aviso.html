@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
         cantidadInput.addEventListener('keydown', function(e) {
-            // No permitir punto decimal, coma o 'e'
+            // No permitir punto decimal o coma 
             if (e.key === '.' || e.key === ',') {
                 e.preventDefault();
             }

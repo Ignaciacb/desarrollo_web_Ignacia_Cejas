@@ -14,6 +14,32 @@ def init_db():
         
         # Crear todas las tablas
         db.metadata.create_all(engine)
+        
+        # Verificar que la tabla de comentarios existe
+        with engine.connect() as conn:
+            # Crear tabla de comentarios si no existe
+            create_comentarios_sql = """
+            CREATE TABLE IF NOT EXISTS comentario (
+                id INT NOT NULL AUTO_INCREMENT,
+                nombre VARCHAR(80) NOT NULL,
+                texto TEXT NOT NULL,
+                fecha_comentario DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                aviso_id INT NOT NULL,
+                PRIMARY KEY (id),
+                INDEX fk_comentario_aviso_idx (aviso_id),
+                CONSTRAINT fk_comentario_aviso
+                    FOREIGN KEY (aviso_id)
+                    REFERENCES aviso_adopcion (id)
+                    ON DELETE CASCADE
+                    ON UPDATE NO ACTION
+            )
+            """
+            try:
+                conn.execute(text(create_comentarios_sql))
+                conn.commit()
+                pass
+            except Exception as e:
+                print(f"Error al crear tabla de comentarios: {e}")
 
         # Verificar si ya hay datos de regiones
         with engine.connect() as conn:

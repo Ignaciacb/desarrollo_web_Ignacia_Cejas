@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, redirect, url_for, session, flash, jsonify
 from utils.validations import validate_adoption_notice, validate_pet_images, validate_contact_methods, validate_phone, validate_sector
-from db import db, DATABASE_URL, get_regiones, get_comunas_by_region, get_comuna_by_id, get_adoption_notices, get_paginated_adoptions, get_adoption_notice_by_id, create_adoption_notice, add_pet_photo, add_contact_method, get_pet_photos, get_contact_methods, get_main_pet_photo
+from db import db, DATABASE_URL, get_regiones, get_comunas_by_region, get_comuna_by_id, get_adoption_notices, get_paginated_adoptions, get_adoption_notice_by_id, create_adoption_notice, add_pet_photo, add_contact_method, get_pet_photos, get_contact_methods, get_main_pet_photo, get_comentarios_by_aviso, add_comentario, AvisoAdopcion, get_daily_adoption_stats, get_pet_type_distribution, get_monthly_pet_type_stats
 from init_db import init_db as init_database
 from werkzeug.utils import secure_filename
 import hashlib
@@ -236,14 +236,14 @@ def detalle_aviso(aviso_id):
 
     unidad_edad_texto = "años" if aviso.unidad_edad == "a" else "meses"
     
-    # Obtener método de contacto 
     metodo_contacto = ""
     num_contacto = ""
     if contactos:
         metodo_contacto = contactos[0].metodo_contacto
-        num_contacto = contactos[0].num_contacto
+        num_contacto = contactos[0].valor_contacto
     
     detalle = {
+        "aviso_id": aviso.id,
         "nombre_contacto": aviso.nombre_contacto,
         "email_contacto": aviso.email_contacto,
         "telefono_contacto": aviso.telefono_contacto,
@@ -271,6 +271,118 @@ def estadisticas():
 @app.route("/exito")
 def exito():
     return render_template("auth/exito.html")
+
+@app.route("/get-stats-data", methods=["GET"])
+def get_stats_data():
+    try:
+        stats = get_daily_adoption_stats()
+        data = [{"date": k, "count": v} for k, v in sorted(stats.items())]
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/get-stats-data-pie", methods=["GET"])
+def get_stats_data_pie():
+    try:
+        dist = get_pet_type_distribution()
+        perros = dist.get("perro", 0) if dist else 0
+        gatos = dist.get("gato", 0) if dist else 0
+        data = [
+            {"name": "Perros", "y": perros},
+            {"name": "Gatos", "y": gatos},
+        ]
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/get-stats-data-bar", methods=["GET"])
+def get_stats_data_bar():
+    try:
+        from datetime import datetime
+        month_abbr = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+        stats = get_monthly_pet_type_stats()
+
+        # Build last 12 months including current month
+        year = datetime.now().year
+        month = datetime.now().month
+        keys = []
+        categories = []
+        # generate from oldest to newest
+        stack = []
+        for _ in range(12):
+            stack.append((year, month))
+            month -= 1
+            if month == 0:
+                month = 12
+                year -= 1
+        for y, m in reversed(stack):
+            keys.append(f"{y}-{m:02d}")
+            categories.append(f"{month_abbr[m-1]} {str(y)[2:]}")
+
+        perros = []
+        gatos = []
+        for k in keys:
+            entry = stats.get(k, {"perro": 0, "gato": 0}) if stats else {"perro": 0, "gato": 0}
+            perros.append(entry.get("perro", 0))
+            gatos.append(entry.get("gato", 0))
+
+        data = {
+            "categories": categories,
+            "perros": perros,
+            "gatos": gatos,
+        }
+        return jsonify(data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/comentarios/<int:aviso_id>")
+def api_get_comentarios(aviso_id):
+    try:
+        comentarios = get_comentarios_by_aviso(aviso_id)
+        comentarios_data = []
+        for comentario in comentarios:
+            comentarios_data.append({
+                "id": comentario.id,
+                "nombre": comentario.nombre,
+                "texto": comentario.texto,
+                "fecha_comentario": comentario.fecha.strftime("%Y-%m-%d %H:%M")
+            })
+        return jsonify(comentarios_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/comentarios", methods=["POST"])
+def api_add_comentario():
+    try:
+        data = request.get_json()
+        nombre = data.get("nombre", "").strip()
+        texto = data.get("texto", "").strip()
+        aviso_id = data.get("aviso_id")
+        
+        # Validaciones
+        if not nombre or len(nombre) < 3 or len(nombre) > 80:
+            return jsonify({"error": "El nombre debe tener entre 3 y 80 caracteres"}), 400
+        
+        if not texto or len(texto) < 5 or len(texto) > 300:
+            return jsonify({"error": "El texto del comentario debe tener entre 5 y 300 caracteres"}), 400
+        
+        if not aviso_id:
+            return jsonify({"error": "ID de aviso requerido"}), 400
+        
+        # Verificar aviso
+        aviso = get_adoption_notice_by_id(aviso_id)
+        if not aviso:
+            return jsonify({"error": "Aviso no encontrado"}), 404
+        
+        # Guardar comentario
+        status, result = add_comentario(nombre, texto, aviso_id)
+        if status:
+            return jsonify({"success": True, "message": "Comentario agregado exitosamente"}), 201
+        else:
+            return jsonify({"error": f"Error al agregar comentario: {result}"}), 500
+            
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     if not os.path.exists(UPLOAD_FOLDER):

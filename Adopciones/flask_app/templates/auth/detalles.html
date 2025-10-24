@@ -2,6 +2,10 @@
 
 {% block title %}Detalle del Aviso - Sistema de Adopciones{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/comentarios.css') }}" />
+{% endblock %}
+
 {% block content %}
         <section class="section visible">
             {% if detalle %}
@@ -14,7 +18,7 @@
                     <p><strong>Email:</strong> {{ detalle.email_contacto }}</p>
                     <p><strong>Teléfono:</strong> {{ detalle.telefono_contacto }}</p>
                     <p><strong>Contactar por:</strong> {{ detalle.metodo_contacto or 'No especificado' }}</p>
-                    <p><strong>ID/URL de contacto:</strong> {{ detalle.valor_contacto or 'No especificado' }}</p>
+                    <p><strong>ID/URL de contacto:</strong> {{ detalle.num_contacto or 'No especificado' }}</p>
                 </div>
 
                 <div class="aviso-info">
@@ -33,6 +37,7 @@
                     <p><strong>Fecha de entrega:</strong> {{ detalle.fecha_entrega }}</p>
                 </div>
 
+
                 {% if fotos %}
                 <div class="aviso-fotos">
                     <h3>Fotos de la mascota</h3>
@@ -48,6 +53,38 @@
                 {% endif %}
             </div>
 
+            <!-- Sección de comentarios -->
+            <div class="comentarios-section">
+                <h3>Comentarios</h3>
+                
+                <!-- Formulario para agregar comentario -->
+                <div class="comentario-form">
+                    <h4>Agregar comentario</h4>
+                    <form id="comentario-form">
+                        <input type="hidden" id="aviso-id" value="{{ detalle.aviso_id if detalle else '' }}">
+                        <div class="form-group">
+                            <label for="nombre-comentario">Nombre:</label>
+                            <input type="text" id="nombre-comentario" name="nombre" required 
+                                   minlength="3" maxlength="80" placeholder="Tu nombre (3-80 caracteres)">
+                        </div>
+                        <div class="form-group">
+                            <label for="texto-comentario">Comentario:</label>
+                            <textarea id="texto-comentario" name="texto" rows="4" cols="50" required 
+                                      minlength="5" maxlength="300" placeholder="Escribe tu comentario aquí (5-300 caracteres)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn--primary">Agregar comentario</button>
+                    </form>
+                </div>
+
+                <!-- Lista de comentarios -->
+                <div class="comentarios-lista">
+                    <h4>Comentarios existentes</h4>
+                    <div id="comentarios-container">
+                        <p>Cargando comentarios...</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="aviso-actions">
                 <a href="{{ url_for('listado_adopciones') }}" class="btn btn--secondary">Volver al listado</a>
                 <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
@@ -59,4 +96,152 @@
             <a href="{{ url_for('index') }}" class="btn btn--primary">Volver a la portada</a>
             {% endif %}
         </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const avisoId = document.getElementById('aviso-id').value;
+    if (!avisoId) return;
+
+    loadComentarios();
+
+    const form = document.getElementById('comentario-form');
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        agregarComentario();
+    });
+});
+
+// Cargar comentarios
+const loadComentarios = () => {
+    const avisoId = document.getElementById('aviso-id').value;
+    const container = document.getElementById('comentarios-container');
+    
+    fetch(`${window.origin}/api/comentarios/${avisoId}`)
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            // Verificar que data es un array
+            if (Array.isArray(data)) {
+                if (data.length === 0) {
+                    container.innerHTML = '<p>No hay comentarios aún.</p>';
+                } else {
+                    const escapeHTML = (str) => {
+                        return String(str)
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/\"/g, "&quot;")
+                            .replace(/'/g, "&#39;");
+                    };
+                    let html = '';
+                    data.forEach((comentario) => {
+                        const nombre = escapeHTML(comentario.nombre);
+                        const texto = escapeHTML(comentario.texto);
+                        const fecha = escapeHTML(comentario.fecha_comentario);
+                        html += `
+                            <div class="comentario-item">
+                                <div class="comentario-header">
+                                    <strong>${nombre}</strong>
+                                    <span class="comentario-fecha">${fecha}</span>
+                                </div>
+                                <div class="comentario-texto">${texto}</div>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
+                }
+            } else {
+                container.innerHTML = '<p>Error al cargar comentarios.</p>';
+            }
+        })
+        .catch((error) => {
+            container.innerHTML = '<p>Error al cargar comentarios.</p>';
+        });
+};
+
+// Agregar comentario
+const agregarComentario = () => {
+    const avisoId = document.getElementById('aviso-id').value;
+    const nombre = document.getElementById('nombre-comentario').value.trim();
+    const texto = document.getElementById('texto-comentario').value.trim();
+    
+    // Validar campos
+    if (nombre.length < 3 || nombre.length > 80) {
+        alert('El nombre debe tener entre 3 y 80 caracteres');
+        return;
+    }
+    
+    if (texto.length < 5 || texto.length > 300) {
+        alert('El comentario debe tener entre 5 y 300 caracteres');
+        return;
+    }
+    
+    fetch(`${window.origin}/api/comentarios`, {
+        method: "POST",
+        body: JSON.stringify({ 
+            nombre: nombre, 
+            texto: texto, 
+            aviso_id: parseInt(avisoId) 
+        }),
+        credentials: "include",
+        cache: "no-cache",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    })
+    .then((response) => {
+        if (!response.ok) {
+            throw new Error(`Network response was not ok: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then((data) => {
+        // Limpiar inputs
+        document.getElementById('nombre-comentario').value = '';
+        document.getElementById('texto-comentario').value = '';
+
+        const container = document.getElementById('comentarios-container');
+        const escapeHTML = (str) => {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        };
+        const nombreEsc = escapeHTML(nombre);
+        const textoEsc = escapeHTML(texto);
+        const fechaEsc = escapeHTML(new Date().toISOString().slice(0,16).replace('T',' '));
+        const nuevo = `
+            <div class="comentario-item">
+                <div class="comentario-header">
+                    <strong>${nombreEsc}</strong>
+                    <span class="comentario-fecha">${fechaEsc}</span>
+                </div>
+                <div class="comentario-texto">${textoEsc}</div>
+            </div>
+        `;
+        if (container.innerHTML.includes('Cargando comentarios') || container.innerHTML.includes('No hay comentarios')) {
+            container.innerHTML = nuevo;
+        } else {
+            container.insertAdjacentHTML('afterbegin', nuevo);
+        }
+    })
+    .catch((error) => {
+        alert('Error al agregar comentario: ' + error.message);
+    });
+};
+
+// Ampliar fotos
+function ampliarFoto(src) {
+    const fotoGrande = document.getElementById("fotoGrande");
+    const overlay = document.getElementById("overlay");
+    if (fotoGrande) fotoGrande.src = src;
+    if (overlay) overlay.style.display = "flex";
+}
+</script>
 {% endblock %}

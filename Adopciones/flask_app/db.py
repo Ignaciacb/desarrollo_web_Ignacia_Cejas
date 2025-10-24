@@ -40,7 +40,6 @@ class AvisoAdopcion(db.Model):
     tipo_animal = Column('tipo', String(50), nullable=False)
     cantidad = Column(Integer, nullable=False)
     edad = Column(Integer, nullable=False)
-    # 'a' o 'm' en la BD
     unidad_edad = Column('unidad_medida', String(1), nullable=False)
     descripcion = Column(Text, nullable=True)
     fecha_entrega = Column(DateTime, nullable=False)
@@ -50,6 +49,7 @@ class AvisoAdopcion(db.Model):
     comuna = relationship("Comuna", back_populates="avisos_adopcion")
     fotos = relationship("Foto", back_populates="aviso_adopcion", cascade="all, delete")
     contactan_por = relationship("ContactanPor", back_populates="aviso_adopcion", cascade="all, delete")
+    comentarios = relationship("Comentario", back_populates="aviso_adopcion", cascade="all, delete")
 
 class Foto(db.Model):
     __tablename__ = 'foto'
@@ -68,6 +68,16 @@ class ContactanPor(db.Model):
     aviso_id = Column(Integer, ForeignKey('aviso_adopcion.id'), nullable=False)
     
     aviso_adopcion = relationship("AvisoAdopcion", back_populates="contactan_por")
+
+class Comentario(db.Model):
+    __tablename__ = 'comentario'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    nombre = Column(String(80), nullable=False)
+    texto = Column(String(300), nullable=False)
+    fecha = Column(DateTime, default=datetime.utcnow)
+    aviso_id = Column(Integer, ForeignKey('aviso_adopcion.id'), nullable=False)
+    
+    aviso_adopcion = relationship("AvisoAdopcion", back_populates="comentarios")
 
 def get_regiones():
     return Region.query.all()
@@ -155,5 +165,95 @@ def get_main_pet_photo(aviso_id):
     foto = Foto.query.filter_by(aviso_id=aviso_id).first()
     return foto.ruta_archivo if foto else None
 
-def get_total_adoption_notices():
-    return AvisoAdopcion.query.count()
+def get_daily_adoption_stats():
+    from sqlalchemy import func
+    from datetime import datetime, timedelta
+    
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=30)
+    
+    daily_stats = db.session.query(
+        func.date(AvisoAdopcion.fecha_publicacion).label('date'),
+        func.count(AvisoAdopcion.id).label('count')
+    ).filter(
+        AvisoAdopcion.fecha_publicacion >= start_date
+    ).group_by(
+        func.date(AvisoAdopcion.fecha_publicacion)
+    ).order_by(
+        func.date(AvisoAdopcion.fecha_publicacion)
+    ).all()
+    
+    result = {}
+    for stat in daily_stats:
+        result[stat.date.strftime('%Y-%m-%d')] = stat.count
+    
+    return result
+
+def get_pet_type_distribution():
+    from sqlalchemy import func
+    
+    pet_stats = db.session.query(
+        AvisoAdopcion.tipo_animal,
+        func.count(AvisoAdopcion.id).label('count')
+    ).group_by(
+        AvisoAdopcion.tipo_animal
+    ).all()
+    
+    result = {}
+    for stat in pet_stats:
+        result[stat.tipo_animal] = stat.count
+    
+    return result
+
+def get_monthly_pet_type_stats():
+    from sqlalchemy import func, extract
+    from datetime import datetime, timedelta
+    
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=365)
+    
+    monthly_stats = db.session.query(
+        extract('year', AvisoAdopcion.fecha_publicacion).label('year'),
+        extract('month', AvisoAdopcion.fecha_publicacion).label('month'),
+        AvisoAdopcion.tipo_animal,
+        func.count(AvisoAdopcion.id).label('count')
+    ).filter(
+        AvisoAdopcion.fecha_publicacion >= start_date
+    ).group_by(
+        extract('year', AvisoAdopcion.fecha_publicacion),
+        extract('month', AvisoAdopcion.fecha_publicacion),
+        AvisoAdopcion.tipo_animal
+    ).order_by(
+        extract('year', AvisoAdopcion.fecha_publicacion),
+        extract('month', AvisoAdopcion.fecha_publicacion)
+    ).all()
+    
+    result = {}
+    for stat in monthly_stats:
+        month_key = f"{int(stat.year)}-{int(stat.month):02d}"
+        if month_key not in result:
+            result[month_key] = {'perro': 0, 'gato': 0}
+        result[month_key][stat.tipo_animal] = stat.count
+    
+    return result
+
+
+
+
+
+def get_comentarios_by_aviso(aviso_id):
+    return Comentario.query.filter_by(aviso_id=aviso_id).order_by(Comentario.fecha.desc()).all()
+
+def add_comentario(nombre, texto, aviso_id):
+    try:
+        comentario = Comentario(
+            nombre=nombre,
+            texto=texto,
+            aviso_id=aviso_id
+        )
+        db.session.add(comentario)
+        db.session.commit()
+        return True, comentario.id
+    except Exception as e:
+        db.session.rollback()
+        return False, str(e)

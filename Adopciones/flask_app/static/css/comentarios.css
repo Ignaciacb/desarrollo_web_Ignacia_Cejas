@@ -1,0 +1,151 @@
+/* Estilos para la sección de comentarios */
+.comentarios-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 0.2em solid #afc9eb;
+    border-radius: 0.25em;
+    box-shadow: 0.2em 0.2em 0px 0px #afc9eb;
+}
+
+.comentarios-section h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+}
+
+.comentario-form {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #ffffff;
+    border: 0.2em solid #afc9eb;
+    border-radius: 0.25em;
+    box-shadow: 0.2em 0.2em 0px 0px #afc9eb;
+}
+
+.comentario-form h4 {
+    color: #0b131f;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #010203;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.comentarios-lista {
+    padding: 20px;
+    background: #ffffff;
+    border: 0.2em solid #afc9eb;
+    border-radius: 0.25em;
+    box-shadow: 0.2em 0.2em 0px 0px #afc9eb;
+}
+
+.comentarios-lista h4 {
+    color: #afc9eb;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.comentario-item {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: #ffffff;
+    border: 0.15em solid #afc9eb;
+    border-left: 0.4em solid #504deb;
+    border-radius: 0.25em;
+    box-shadow: 0.175em 0.175em 0px 0px #afc9eb;
+}
+
+.comentario-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 0.1em solid #afc9eb;
+}
+
+.comentario-header strong {
+    color: #333;
+    font-size: 1.1em;
+}
+
+.comentario-fecha {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.comentario-texto {
+    color: #333;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+/* Estilos para botones */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #FC2865;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 0.3em;
+    border: 0.15em solid #000000;
+    box-shadow: 0.175em 0.175em 0px 0px #000000;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #fb5685;
+    color: white;
+    text-decoration: none;
+}
+
+.btn--primary {
+    background-color: #FC2865;
+}
+
+.btn--primary:hover {
+    background-color: #fb5685;
+}
+
+.btn--secondary {
+    background-color: #6c757d;
+}
+
+.btn--secondary:hover {
+    background-color: #545b62;
+}
+

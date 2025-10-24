@@ -1,0 +1,58 @@
+.stats-container {
+    padding: 1rem;
+    border-radius: 0.25em;
+    margin: 0 auto;
+    font-family: "Roboto", sans-serif;
+    font-size: 1.2rem;
+}
+
+.highcharts-figure {
+    margin: 30px 0;
+    padding: 20px;
+    border-radius: 0.25em;
+}
+
+.highcharts-description {
+    font-size: 0.9em;
+    color: #333333;
+    margin-top: 10px;
+    text-align: center;
+}
+
+#loading {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 1.1em;
+    color: #666666;
+}
+
+#error-message {
+    text-align: center;
+    color: #cc3344;
+    margin: 20px 0;
+    font-size: 1.1em;
+}
+
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #FC2865;
+    color: white;
+    text-decoration: none;
+    border-radius: 0.3em;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #fb5685;
+    color: white;
+}
+
+.btn--primary {
+    background-color: #FC2865;
+}
+
+.btn--primary:hover {
+    background-color: #fb5685;
+}
